@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es" data-jb-theme="mint">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>JB's Slots</title>
+<meta name="theme-color" content="#EAF6F4" id="tc">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="JB's Slots">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root[data-jb-theme="mint"]{--jb-bg:#EAF6F4;--jb-surface:#FFFFFF;--jb-accent-1:#00C9A7;--jb-accent-2:#00E0A0;--jb-text:#0F2A26;--jb-muted:#4d6b66}
+  :root[data-jb-theme="ocean"]{--jb-bg:#E8F4FB;--jb-surface:#FFFFFF;--jb-accent-1:#0EA5E9;--jb-accent-2:#06B6D4;--jb-text:#0C2733;--jb-muted:#4a6674}
+  :root[data-jb-theme="sage"]{--jb-bg:#EFF5EC;--jb-surface:#FFFFFF;--jb-accent-1:#6BA368;--jb-accent-2:#A3D9A5;--jb-text:#1E2E1B;--jb-muted:#566650}
+  :root[data-jb-theme="teal"]{--jb-bg:#E6F7F6;--jb-surface:#FFFFFF;--jb-accent-1:#009688;--jb-accent-2:#26C6DA;--jb-text:#0B2C2A;--jb-muted:#476b69}
+  :root[data-jb-theme="coral"]{--jb-bg:#FFF1EC;--jb-surface:#FFFFFF;--jb-accent-1:#FF6B5B;--jb-accent-2:#FF9472;--jb-text:#3A1712;--jb-muted:#7a504a}
+  :root[data-jb-theme="lavanda"]{--jb-bg:#F3EFFB;--jb-surface:#FFFFFF;--jb-accent-1:#8B5CF6;--jb-accent-2:#C084FC;--jb-text:#241A3D;--jb-muted:#5f5480}
+  :root[data-jb-theme="noche"]{--jb-bg:#121826;--jb-surface:#1E2536;--jb-accent-1:#00E0A0;--jb-accent-2:#26C6DA;--jb-text:#EDEFF5;--jb-muted:#9aa4bd}
+
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;min-height:100vh;background:var(--jb-bg);color:var(--jb-text);font-size:17px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;justify-content:center;padding:8px 10px;transition:background 300ms ease,color 300ms ease;--cell:clamp(46px,min(22vw,calc((100dvh - 522px)/3)),92px)}
+  .app{width:100%;max-width:430px;display:flex;flex-direction:column;gap:8px}
+  button{font-family:inherit}
+
+  /* Selector de tema + sonido (cabecera) */
+  .tools{display:flex;gap:10px;align-items:center;justify-content:center;animation:jbFadeSlideIn 400ms ease-out}
+  .tools button{width:26px;height:26px;border-radius:50%;border:2px solid var(--jb-surface);padding:0;cursor:pointer;box-shadow:0 0 0 1px #0002;transition:transform 200ms ease-out;font-size:13px;line-height:20px}
+  .tools button:hover{transform:scale(1.2)}
+  .tools button.on{box-shadow:0 0 0 2px var(--jb-text)}
+  .tools .moon{background:#121826;color:#fff}
+  .tools .snd{background:var(--jb-surface);margin-left:6px}
+
+  /* ===== Carcasa de la máquina ===== */
+  .cabinet{position:relative;border-radius:30px 30px 20px 20px;padding:8px 8px 10px;background:linear-gradient(160deg,var(--jb-accent-1),var(--jb-accent-2));box-shadow:0 12px 30px rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.55),inset 0 -4px 0 rgba(0,0,0,.12);animation:jbFadeSlideIn 400ms ease-out both;overflow:hidden}
+  .marquee{text-align:center;padding:2px 0 4px}
+  .mtitle{font-size:26px;font-weight:900;letter-spacing:3px;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.28),0 0 14px rgba(255,255,255,.55)}
+  .lights{display:flex;justify-content:space-between;margin:2px 6px 0}
+  .lights span{width:9px;height:9px;border-radius:50%;background:#fffbe0;opacity:.35;animation:blink 1s infinite}
+  .lights span:nth-child(even){animation-delay:.5s}
+  .lights.fast span{animation-duration:.28s}
+  .lights.flash span{animation:flash .22s infinite;animation-delay:0s!important}
+  @keyframes blink{50%{opacity:1;box-shadow:0 0 10px #fff4a8}}
+  @keyframes flash{0%,100%{opacity:.25}50%{opacity:1;box-shadow:0 0 14px #fff4a8}}
+
+  .panel{background:var(--jb-surface);border-radius:20px;padding:10px;box-shadow:inset 0 2px 8px rgba(0,0,0,.12);transition:background 300ms ease}
+
+  /* Marco dorado de los rodillos */
+  .frame{padding:7px;border-radius:18px;background:linear-gradient(145deg,#fff1a8,#e2b22e 45%,#b8860b);box-shadow:0 3px 8px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.7)}
+  .inner{background:var(--jb-surface);border-radius:12px;padding:6px;display:flex;gap:6px;justify-content:center;position:relative;overflow:hidden;box-shadow:inset 0 0 14px rgba(0,0,0,.25)}
+  .inner::before{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.42),transparent 38%)}
+  .band{position:absolute;left:0;right:0;top:calc(6px + var(--cell));height:var(--cell);background:color-mix(in srgb,var(--jb-accent-1) 14%,transparent);border-top:1.5px dashed color-mix(in srgb,var(--jb-accent-1) 70%,transparent);border-bottom:1.5px dashed color-mix(in srgb,var(--jb-accent-1) 70%,transparent);pointer-events:none}
+  .band::before,.band::after{content:"";position:absolute;top:50%;margin-top:-8px;border:8px solid transparent}
+  .band::before{left:0;border-left-color:#e2a400}
+  .band::after{right:0;border-right-color:#e2a400}
+  .reel{width:var(--cell);height:calc(var(--cell)*3);position:relative;overflow:hidden;border-radius:10px}
+  .reel::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(var(--jb-surface) 0%,transparent 30%,transparent 70%,var(--jb-surface) 100%);opacity:.85}
+  .strip{position:absolute;left:0;right:0;top:calc(var(--cell)*-1)}
+  .strip.spin{top:0;filter:blur(2px);animation:roll var(--dur,.45s) linear infinite}
+  .strip.land{animation:land .4s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes roll{to{transform:translateY(calc(var(--cell)*-8))}}
+  @keyframes land{from{transform:translateY(calc(var(--cell)*-.6))}to{transform:none}}
+  .c{height:var(--cell);display:flex;align-items:center;justify-content:center;font-size:calc(var(--cell)*.62);border-radius:12px}
+  .c.hit{animation:hit .45s 5;background:radial-gradient(circle,color-mix(in srgb,var(--jb-accent-1) 45%,transparent),transparent 72%)}
+  @keyframes hit{50%{transform:scale(1.18)}}
+
+  .stops{display:flex;gap:6px;justify-content:center;margin-top:7px;padding:0 6px}
+  .stopb{width:var(--cell);padding:7px 0;font-size:13px;font-weight:800;letter-spacing:1px}
+
+  .msg{min-height:24px;margin:6px 0 4px;text-align:center;font-weight:700;font-size:17px}
+  .msg.ok{color:var(--jb-accent-1)}.msg.bad{color:var(--jb-muted)}
+  .info{display:flex;gap:8px}
+  .box{flex:1;border-radius:12px;padding:3px 10px;text-align:center;background:var(--jb-bg)}
+  .box span{display:block;font-size:12px;color:var(--jb-muted);letter-spacing:1px}
+  .box b{font-size:21px}
+  .box.up b{animation:jbPulse 400ms ease}
+
+  .bets{display:flex;gap:8px;margin-top:7px}
+  .bets button{flex:1;padding:7px 0;border-radius:12px;border:1.5px solid color-mix(in srgb,var(--jb-accent-1) 40%,transparent);background:var(--jb-surface);color:var(--jb-text);font-size:18px;font-weight:700;cursor:pointer;transition:transform 200ms ease-out}
+  .bets button:hover{transform:scale(1.03)}
+  .bets button:disabled{opacity:.5;pointer-events:none}
+  .bets button.on{background:linear-gradient(135deg,var(--jb-accent-1),var(--jb-accent-2));color:#fff;border-color:transparent;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+
+  .jb-btn{background:linear-gradient(135deg,var(--jb-accent-1),var(--jb-accent-2));border:none;border-radius:12px;color:#fff;cursor:pointer;text-shadow:0 1px 0 rgba(0,0,0,.3);transition:transform 200ms ease-out,box-shadow 200ms ease-out,opacity 200ms}
+  .jb-btn:hover{transform:scale(1.03);box-shadow:0 0 20px color-mix(in srgb,var(--jb-accent-1) 50%,transparent)}
+  .jb-btn:active{animation:jbPulse 350ms ease}
+  .jb-btn:disabled{opacity:.35;pointer-events:none}
+  #spin{margin-top:7px;width:100%;padding:11px;font-size:22px;font-weight:900;letter-spacing:3px;box-shadow:0 4px 0 color-mix(in srgb,var(--jb-accent-1) 60%,#000)}
+  #spin.stopmode{background:linear-gradient(135deg,#ff6b5b,#ff9472);box-shadow:0 4px 0 #b84436}
+
+  /* ===== Bandeja de monedas ===== */
+  .tray{position:relative;margin:9px 10px 0;height:42px;border-radius:6px 6px 14px 14px;background:linear-gradient(#20242f,#0f121a);border-top:4px solid rgba(0,0,0,.4);box-shadow:inset 0 6px 10px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.4);display:flex;flex-wrap:wrap-reverse;align-content:flex-start;justify-content:center;padding:3px 8px;overflow:hidden}
+  .tray::after{content:"BANDEJA";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:4px;color:rgba(255,255,255,.18);pointer-events:none}
+  .tray.full::after{display:none}
+  .coin{width:20px;height:20px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 30%,#fff6b8,#ffd43b 45%,#d98f00);border:1.5px solid #a86500;box-shadow:inset 0 -2px 2px rgba(0,0,0,.2),0 1px 2px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900;color:#8a5200}
+  .tray .coin{margin:0 -3px;position:relative;z-index:1}
+  #coins{position:absolute;inset:0;pointer-events:none;z-index:5}
+  #coins .coin{position:absolute;left:0;top:0}
+
+  /* Panel plegable de ayuda */
+  .pay{background:var(--jb-surface);border-radius:16px;border:1px solid color-mix(in srgb,var(--jb-accent-1) 30%,transparent);box-shadow:0 8px 24px rgba(0,0,0,.08);padding:10px 14px;transition:background 300ms ease}
+  .pay summary{cursor:pointer;font-weight:800;font-size:15px;color:var(--jb-muted);letter-spacing:1px;list-style:none;text-align:center}
+  .pay summary::-webkit-details-marker{display:none}
+  .pay[open] summary{margin-bottom:8px}
+  .pay p{margin:0 0 8px;font-size:15px;color:var(--jb-muted)}
+  .pay div{display:flex;justify-content:space-between;padding:4px 0}
+  .pay em{font-style:normal;font-weight:800;color:var(--jb-accent-1)}
+  .reset{background:none;border:none;color:var(--jb-muted);font-size:15px;text-decoration:underline;cursor:pointer}
+
+  /* Pie con firma visual JB */
+  .foot{display:flex;justify-content:space-between;align-items:center;padding:0 6px}
+  .sign{display:flex;align-items:center;gap:8px}
+  .sign .logo{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.3);background:linear-gradient(135deg,var(--jb-accent-1),var(--jb-accent-2));box-shadow:0 0 14px color-mix(in srgb,var(--jb-accent-1) 50%,transparent)}
+  .sign span{font-size:15px;font-weight:700;background:linear-gradient(135deg,var(--jb-accent-1),var(--jb-accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ===== Ventana emergente tras cada tirada ===== */
+  #pop{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;pointer-events:none;z-index:6;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+  #pop.on{opacity:1;visibility:visible}
+  .popcard{pointer-events:auto;cursor:pointer;width:min(84vw,330px);padding:18px 16px 14px;border-radius:26px;text-align:center;box-shadow:0 22px 50px rgba(0,0,0,.38);transform:scale(.6)}
+  #pop.on .popcard{animation:popin .55s cubic-bezier(.2,1.6,.4,1) forwards}
+  .popcard.win{color:#1a1230;background:linear-gradient(135deg,var(--jb-accent-1),var(--jb-accent-2) 55%,#ffd43b);border:4px solid #fff}
+  .popcard.lose{color:var(--jb-text);background:var(--jb-surface);border:4px solid color-mix(in srgb,var(--jb-accent-1) 45%,transparent)}
+  .pe{font-size:62px;line-height:1.1;display:inline-block;animation:bounce .8s ease-in-out infinite}
+  .popcard.lose .pe{animation:wobble 1.2s ease-in-out infinite}
+  .pt{font-size:25px;font-weight:900;margin-top:2px}
+  .pa{font-size:50px;font-weight:900;line-height:1.1;margin:2px 0}
+  .popcard.lose .pa{color:#D63B3B}
+  :root[data-jb-theme="noche"] .popcard.lose .pa{color:#ff7b7b}
+  .ps{font-size:16px;font-weight:600;opacity:.85}
+  .ph{font-size:12px;margin-top:8px;opacity:.6}
+  @keyframes popin{from{transform:scale(.55) rotate(-6deg)}to{transform:scale(1) rotate(0)}}
+  @keyframes bounce{50%{transform:translateY(-10px) scale(1.12)}}
+  @keyframes wobble{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+
+  .pbtns{display:none;gap:8px;margin-top:10px}
+  .pb{flex:1;padding:11px 6px;border-radius:14px;border:2px solid #1a1230;font-weight:900;font-size:15px;cursor:pointer;transition:transform 200ms ease-out}
+  .pb:hover{transform:scale(1.03)}.pb:active{animation:jbPulse 350ms ease}
+  .pb.cash{background:#1a1230;color:#fff}
+  .pb.dbl{background:#fff;color:#1a1230}
+  .pb.red{background:#e5484d;color:#fff;border-color:#fff}
+  .pb.blk{background:#1a1230;color:#fff;border-color:#fff}
+  .sh{margin:12px 0 4px;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--jb-accent-1) 30%,transparent);font-size:14px;letter-spacing:1px;color:var(--jb-muted);font-weight:800}
+  .pay b{font-weight:800}
+  #stats{display:block}
+  #cf{position:fixed;inset:0;pointer-events:none;z-index:4}
+
+  @keyframes jbFadeSlideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  @keyframes jbPulse{50%{transform:scale(.97);filter:brightness(1.15)}}
+  @media (prefers-reduced-motion:reduce){.cabinet,.tools,.jb-btn:active,.c.hit,.lights span,.pe,#pop.on .popcard{animation:none}.popcard{transform:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="tools" id="themes"></div>
+
+  <div class="cabinet" id="cab">
+    <div class="marquee">
+      <div class="mtitle">🎰 JB's SLOTS</div>
+      <div class="lights" id="lights"></div>
+    </div>
+
+    <div class="panel">
+      <div class="frame">
+        <div class="inner" id="inner">
+          <div class="band"></div>
+          <div id="reels" style="display:flex;gap:6px"></div>
+        </div>
+      </div>
+      <div class="stops" id="stops"></div>
+      <div class="msg" id="msg">¡Suerte!</div>
+      <div class="info">
+        <div class="box" id="balbox"><span>SALDO</span><b id="bal">100</b></div>
+        <div class="box"><span>APUESTA</span><b id="betv">5</b></div>
+      </div>
+      <div class="bets" id="bets"></div>
+      <button class="jb-btn" id="spin">GIRAR</button>
+    </div>
+
+    <div class="tray" id="tray"></div>
+    <div id="coins"></div>
+  </div>
+
+  <details class="pay">
+    <summary>ℹ️ AYUDA Y ESTADÍSTICAS (toca para ver)</summary>
+    <p>Solo cuenta la <b>fila del centro</b> (la de las flechas). Si salen 3 iguales ahí, ganas la apuesta × el número. Las otras filas son solo decoración.</p>
+    <p>Paras cada rodillo con su botón PARAR, tocándolo o con las teclas 1·2·3. Si no paras, se paran solos.</p>
+    <p>Tras ganar puedes tocar <b>🎲 DOBLE O NADA</b>: adivina rojo o negro. Si aciertas, el premio se dobla (hasta 3 veces seguidas); si fallas, lo pierdes.</p>
+    <div><span>7️⃣ 7️⃣ 7️⃣</span><em>×100</em></div>
+    <div><span>⭐ ⭐ ⭐</span><em>×50</em></div>
+    <div><span>🔔 🔔 🔔</span><em>×25</em></div>
+    <div><span>🍇 🍇 🍇</span><em>×15</em></div>
+    <div><span>🍊 🍊 🍊</span><em>×10</em></div>
+    <div><span>🍋 🍋 🍋</span><em>×8</em></div>
+    <div><span>🍒 🍒 🍒</span><em>×5</em></div>
+    <div><span>🍒 🍒 + otro (fila del centro)</span><em>×2</em></div>
+    <div class="sh">📊 MIS ESTADÍSTICAS</div>
+    <div id="stats"></div>
+    <button class="reset" id="rst" style="margin-top:6px">Borrar estadísticas</button>
+  </details>
+
+  <div class="foot">
+    <button class="reset" id="reset">Reiniciar saldo</button>
+    <button class="reset" id="install" hidden>📲 Instalar</button>
+    <div class="sign"><div class="logo">JB</div><span>JB's Universe</span></div>
+  </div>
+</div>
+
+<div id="pop"><div class="popcard" id="popcard"><div class="pe" id="pe"></div><div class="pt" id="pt"></div><div class="pa" id="pa"></div><div class="ps" id="ps"></div><div class="pbtns" id="pbtns"></div><div class="ph" id="ph">toca para cerrar</div></div></div>
+<canvas id="cf"></canvas>
+
+<script>
+// Símbolos: emoji, premio por 3 iguales, peso (más peso = sale más a menudo)
+const S=[["7️⃣",100,1],["⭐",50,2],["🔔",25,3],["🍇",15,4],["🍊",10,5],["🍋",8,6],["🍒",5,7]];
+const E=S.map(s=>s[0]);
+const TOTAL=S.reduce((a,s)=>a+s[2],0);
+const START=100, BETS=[1,5,10,25], AUTO_STOP=5000, AUTO_GAP=1200;
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+let bal=+store.get("jbslots_bal",START), bet=5, curBet=5, busy=false, mute=store.get("jbslots_mute","0")==="1", shown=0, popT=0, popDelayT=0;
+if(!(bal>0))bal=START;
+let stake=0, gLeft=0;
+let ST=Object.assign({spins:0,wins:0,best:0,maxBal:Math.max(START,bal),streak:0,bestStreak:0},(()=>{try{return JSON.parse(store.get("jbslots_stats","{}"))}catch(e){return{}}})());
+function saveST(){store.set("jbslots_stats",JSON.stringify(ST));renderStats()}
+function chkRecord(){if(bal>ST.maxBal){ST.maxBal=bal;saveST();return true}return false}
+function renderStats(){const pct=ST.spins?Math.round(ST.wins/ST.spins*100):0;
+  $("stats").innerHTML=[["Tiradas",ST.spins],["Ganadas",ST.wins+" ("+pct+"%)"],["Mejor premio",ST.best],["Saldo máximo 🏆",ST.maxBal],["Racha actual",ST.streak],["Mejor racha",ST.bestStreak]].map(([k,v])=>`<div><span>${k}</span><b>${v}</b></div>`).join("")}
+const canVib="vibrate" in navigator;let vib=store.get("jbslots_vib","1")==="1";
+function vibe(p){if(vib&&canVib)try{navigator.vibrate(p)}catch(e){}}
+const spinning=[false,false,false], res=[null,null,null], autoT=[], strips=[], stopBtns=[];
+let tickT=0;
+
+// ---------- Sonido ----------
+let ac;
+function beep(f,d=.08,t="square",v=.05){if(mute)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.value=v;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+
+// ---------- Cabecera: temas + sonido ----------
+const THEMES=[["mint","#00C9A7"],["ocean","#0EA5E9"],["sage","#6BA368"],["teal","#009688"],["coral","#FF6B5B"],["lavanda","#8B5CF6"],["noche",""]];
+function setTheme(t){document.documentElement.dataset.jbTheme=t;store.set("jbslots_theme",t);const tc=$("tc");if(tc)tc.content=getComputedStyle(document.documentElement).getPropertyValue("--jb-bg").trim();[...$("themes").querySelectorAll("[data-t]")].forEach(b=>b.classList.toggle("on",b.dataset.t===t))}
+THEMES.forEach(([t,c])=>{const b=document.createElement("button");b.dataset.t=t;b.title=t;b.setAttribute("aria-label","Tema "+t);if(t==="noche"){b.className="moon";b.textContent="🌙"}else b.style.background=c;b.onclick=()=>setTheme(t);$("themes").appendChild(b)});
+const sb=document.createElement("button");sb.className="snd";sb.setAttribute("aria-label","Sonido");sb.onclick=()=>{mute=!mute;store.set("jbslots_mute",mute?"1":"0");sb.textContent=mute?"🔇":"🔊"};sb.textContent=mute?"🔇":"🔊";$("themes").appendChild(sb);
+if(canVib){const vb=document.createElement("button");vb.className="snd";vb.style.marginLeft="0";vb.setAttribute("aria-label","Vibración");vb.textContent=vib?"📳":"📴";vb.onclick=()=>{vib=!vib;store.set("jbslots_vib",vib?"1":"0");vb.textContent=vib?"📳":"📴";vibe(40)};$("themes").appendChild(vb)}
+setTheme(store.get("jbslots_theme","mint"));
+
+// ---------- Luces ----------
+for(let i=0;i<14;i++)$("lights").appendChild(document.createElement("span"));
+
+// ---------- Rodillos ----------
+const randE=()=>E[Math.floor(Math.random()*E.length)];
+const cells=a=>a.map(e=>`<div class="c">${e}</div>`).join("");
+function rnd(){let n=Math.random()*TOTAL;for(const s of S){if((n-=s[2])<0)return s}return S[6]}
+for(let i=0;i<3;i++){
+  const r=document.createElement("div");r.className="reel";r.onclick=()=>stopReel(i);
+  const st=document.createElement("div");st.className="strip";r.appendChild(st);$("reels").appendChild(r);strips.push(st);
+  const b=document.createElement("button");b.className="jb-btn stopb";b.textContent="PARAR";b.disabled=true;b.onclick=()=>stopReel(i);$("stops").appendChild(b);stopBtns.push(b);
+  setStatic(i,["🍒","🍋","🔔"][i]);
+}
+function setStatic(i,mid){const st=strips[i];st.className="strip";st.style.removeProperty("--dur");st.innerHTML=cells([randE(),randE(),mid,randE(),randE()])}
+function startSpin(i){const st=strips[i],a=Array.from({length:8},randE);st.innerHTML=cells([...a,...a]);st.style.setProperty("--dur",(.4+i*.05)+"s");st.className="strip spin";spinning[i]=true;stopBtns[i].disabled=false}
+
+// ---------- Saldo y apuestas ----------
+function show(){$("betv").textContent=bet;store.set("jbslots_bal",bal)}
+function animBal(to){const from=shown,t0=performance.now();$("balbox").classList.remove("up");void $("balbox").offsetWidth;if(to>from)$("balbox").classList.add("up");
+  (function f(t){const k=Math.min((t-t0)/600,1);shown=Math.round(from+(to-from)*k);$("bal").textContent=shown;if(k<1)requestAnimationFrame(f)})(t0)}
+function say(t,c){const m=$("msg");m.textContent=t;m.className="msg "+(c||"")}
+function lock(on){[...$("bets").children].forEach(e=>e.disabled=on)}
+BETS.forEach(b=>{const e=document.createElement("button");e.textContent=b;e.dataset.b=b;e.onclick=()=>{if(busy)return;bet=b;draw();show()};$("bets").appendChild(e)});
+function draw(){[...$("bets").children].forEach(e=>e.classList.toggle("on",+e.dataset.b===bet))}
+
+// ---------- Monedas y bandeja ----------
+const tray=$("tray"),coinLayer=$("coins"),cab=$("cab");
+function mkCoin(){const c=document.createElement("div");c.className="coin";c.textContent="JB";return c}
+function trayAdd(n){for(let i=0;i<n;i++)tray.appendChild(mkCoin());while(tray.children.length>44)tray.removeChild(tray.firstChild);tray.classList.toggle("full",tray.children.length>0)}
+function trayClear(){tray.innerHTML="";tray.classList.remove("full")}
+function coinRain(count){
+  if(reduced){trayAdd(count);return}
+  const cr=cab.getBoundingClientRect(),ir=$("inner").getBoundingClientRect(),tr=tray.getBoundingClientRect();
+  const y0=ir.top-cr.top+20,y1=tr.top-cr.top+8;
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      const c=mkCoin(),x=cr.width*.2+Math.random()*cr.width*.6;
+      coinLayer.appendChild(c);
+      const a=c.animate([{transform:`translate(${x}px,${y0}px) rotate(0deg)`,opacity:1},{transform:`translate(${x+(Math.random()-.5)*30}px,${y1}px) rotate(${(Math.random()-.5)*540}deg)`,opacity:1}],{duration:650+Math.random()*350,easing:"cubic-bezier(.5,0,.9,.6)",fill:"forwards"});
+      a.onfinish=()=>{c.remove();trayAdd(1);beep(1500+Math.random()*500,.05,"triangle",.045);setTimeout(()=>beep(2100,.06,"triangle",.03),45)};
+    },i*70);
+  }
+}
+
+// ---------- Ventana emergente ----------
+const WIN_S=["¡Toma ya!","¡Eso es!","¡Qué clase!","¡Caja sonando!","¡Así se hace!"];
+const WIN_M=["¡GRAN PREMIO!","¡Menudo golpe!","¡Esto se pone bueno!"];
+const WIN_L=["¡¡JACKPOT!!","¡¡BOOOOM!!","¡¡Rompiste la banca!!"];
+const LOSE=["Uy, esta no era…","Los rodillos se hacen los remolones","La próxima cae, seguro","Casi… pero no","Ni los rodillos se ponen de acuerdo","Calentando motores…"];
+const NEAR=["¡Casi, casi!","¡Por un pelo!","Uy, rozando el premio…"];
+function hidePop(){clearTimeout(popT);$("pop").classList.remove("on")}
+function placePop(){const card=$("popcard");let top=$("inner").getBoundingClientRect().bottom+8;top=Math.min(top,innerHeight-card.offsetHeight-8);$("pop").style.paddingTop=Math.max(8,Math.round(top))+"px"}
+function btns(list){const b=$("pbtns");b.innerHTML="";b.style.display=list.length?"flex":"none";$("ph").style.display=list.length?"none":"block";
+  list.forEach(([cls,txt,fn])=>{const e=document.createElement("button");e.className="pb "+cls;e.textContent=txt;e.onclick=ev=>{ev.stopPropagation();fn()};b.appendChild(e)})}
+function winBtns(){const l=[["cash","COBRAR",hidePop]];if(gLeft>0)l.push(["dbl","🎲 DOBLE O NADA",askColor]);btns(l)}
+function setPop(cls,emoji,title,amount,sub){$("popcard").className="popcard "+cls;$("pe").textContent=emoji;$("pt").textContent=title;$("pa").textContent=amount;$("ps").textContent=sub}
+function popup(win,mult,near,rec){
+  clearTimeout(popT);$("pop").classList.remove("on");void $("pop").offsetWidth;
+  if(win>0){
+    stake=win;gLeft=3;
+    setPop("win",mult>=25?"🤑":mult>=10?"🎉":"💰",pick(mult>=25?WIN_L:mult>=10?WIN_M:WIN_S),"+"+win,"Apostaste "+curBet+" · ganaste "+win+(rec?" · 🏆 ¡Récord!":""));
+    winBtns();
+  }else{
+    setPop("lose",near?"😮":"😅",pick(near?NEAR:LOSE),"-"+curBet,"Saldo: "+bal);btns([]);
+  }
+  placePop();$("pop").classList.add("on");
+  popT=setTimeout(hidePop,win>0?6500:2200);
+}
+function askColor(){
+  clearTimeout(popT);setPop("win","🃏","¿Rojo o negro?","×2 o nada","Te juegas "+stake);
+  btns([["red","♥️ ROJO",()=>guess(true)],["blk","♠️ NEGRO",()=>guess(false)]]);
+  placePop();beep(500,.1,"triangle",.06);popT=setTimeout(hidePop,8000);
+}
+function guess(pickRed){
+  clearTimeout(popT);gLeft--;bal-=stake;
+  const red=Math.random()<.5,ok=pickRed===red;let rec=false;
+  if(ok){
+    stake*=2;bal+=stake;rec=chkRecord();ST.best=Math.max(ST.best,stake);saveST();
+    setPop("win",red?"♥️":"♠️","¡Acertaste!","+"+stake,"Premio doblado"+(rec?" · 🏆 ¡Récord!":""));
+    winBtns();vibe([100,40,100]);[700,950,1250].forEach((f,i)=>setTimeout(()=>beep(f,.13,"triangle",.06),i*100));confetti(40);
+    say("¡Doblaste! 🎲 Premio "+stake,"ok");popT=setTimeout(hidePop,6500);
+  }else{
+    setPop("lose",red?"♥️":"♠️","¡Ouch! Perdiste el premio","-"+stake,"Saldo: "+bal);
+    btns([]);vibe(200);beep(260,.3,"sawtooth",.05);say("Perdiste el doble o nada","bad");popT=setTimeout(hidePop,2600);
+  }
+  animBal(bal);show();placePop();
+}
+$("popcard").onclick=hidePop;
+
+// ---------- Juego ----------
+function spin(){
+  if(busy){stopNext();return}
+  hidePop();clearTimeout(popDelayT);
+  if(bal<bet){say("Saldo insuficiente 😅 Baja la apuesta o reinicia","bad");return}
+  busy=true;curBet=bet;bal-=curBet;show();animBal(bal);lock(true);
+  say("¡Para los rodillos! ✋");
+  $("spin").textContent="PARAR";$("spin").classList.add("stopmode");
+  $("lights").className="lights fast";
+  strips.forEach((s,i)=>{startSpin(i);autoT[i]=setTimeout(()=>stopReel(i),AUTO_STOP+i*AUTO_GAP)});
+  clearInterval(tickT);tickT=setInterval(()=>beep(170+Math.random()*80,.02,"square",.025),95);
+}
+function stopNext(){const i=spinning.findIndex(Boolean);if(i>=0)stopReel(i)}
+function stopReel(i){
+  if(!spinning[i])return;
+  clearTimeout(autoT[i]);spinning[i]=false;stopBtns[i].disabled=true;
+  const s=rnd();res[i]=s;setStatic(i,s[0]);strips[i].classList.add("land");
+  beep(120,.12,"triangle",.12);beep(520+i*110,.08,"square",.04);vibe(15);
+  if(!spinning.some(Boolean))finish();
+}
+function finish(){
+  clearInterval(tickT);
+  let mult=0;
+  const three=res[0]===res[1]&&res[1]===res[2];
+  const near=!three&&(res[0]===res[1]||res[1]===res[2]||res[0]===res[2]);
+  if(three){mult=res[0][1];strips.forEach(s=>s.children[2].classList.add("hit"))}
+  else{
+    const ch=res.map((s,i)=>s[0]==="🍒"?i:-1).filter(i=>i>=0);
+    if(ch.length===2){mult=2;ch.forEach(i=>strips[i].children[2].classList.add("hit"))}
+  }
+  const win=mult*curBet;
+  ST.spins++;if(win>0){ST.wins++;ST.streak++;ST.bestStreak=Math.max(ST.bestStreak,ST.streak);ST.best=Math.max(ST.best,win)}else ST.streak=0;
+  let rec=false;
+  if(win>0){
+    bal+=win;rec=chkRecord();animBal(bal);vibe(mult>=25?[100,50,100,50,100,50,300]:mult>=10?[100,50,100,50,200]:[80,40,120]);say("¡Ganaste "+win+"! 🎉","ok");
+    [660,880,1100,1320].forEach((f,i)=>setTimeout(()=>beep(f,.16,"triangle",.07),i*120));
+    $("lights").className="lights flash";setTimeout(()=>$("lights").className="lights",2200);
+    coinRain(Math.min(28,6+Math.round(mult/2)));
+    confetti(mult>=25?200:mult>=10?110:50);
+  }else{
+    say("Sigue intentándolo…","bad");$("lights").className="lights";
+    beep(300,.16,"sawtooth",.04);setTimeout(()=>beep(220,.28,"sawtooth",.04),170);vibe(60);
+  }
+  if(bal<=0){bal=0;say("Sin saldo. Pulsa «Reiniciar saldo»","bad")}
+  saveST();show();busy=false;lock(false);
+  $("spin").textContent="GIRAR";$("spin").classList.remove("stopmode");
+  clearTimeout(popDelayT);popDelayT=setTimeout(()=>popup(win,mult,near,rec),550);
+}
+
+// ---------- Confeti ----------
+const cv=$("cf"),cx=cv.getContext("2d");let parts=[],raf=0;
+function confetti(n){
+  if(reduced)return;
+  cv.width=innerWidth;cv.height=innerHeight;
+  const cs=getComputedStyle(document.documentElement),cols=[cs.getPropertyValue("--jb-accent-1").trim(),cs.getPropertyValue("--jb-accent-2").trim(),"#FFD43B","#FF6B9D","#FFFFFF"];
+  for(let i=0;i<n;i++)parts.push({x:innerWidth/2,y:innerHeight*.45,vx:(Math.random()-.5)*15,vy:-Math.random()*14-4,r:Math.random()*7+5,c:cols[i%cols.length],a:Math.random()*6,va:(Math.random()-.5)*.4,life:1});
+  if(!raf)loop();
+}
+function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts=parts.filter(p=>p.life>0&&p.y<cv.height+20);
+  parts.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;p.life-=.007;cx.save();cx.globalAlpha=Math.max(p.life,0);cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.fillRect(-p.r/2,-p.r/2,p.r,p.r*.6);cx.restore()});
+  raf=parts.length?requestAnimationFrame(loop):0;
+  if(!raf)cx.clearRect(0,0,cv.width,cv.height);
+}
+
+// ---------- Controles ----------
+$("spin").onclick=spin;
+$("reset").onclick=()=>{if(busy)return;hidePop();bal=START;show();animBal(bal);trayClear();say("¡Suerte!")};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space"){e.preventDefault();spin()}
+  else if(e.code==="Escape")hidePop();
+  else if(["Digit1","Digit2","Digit3","Numpad1","Numpad2","Numpad3"].includes(e.code))stopReel(+e.code.slice(-1)-1);
+});
+let rt=0;
+$("rst").onclick=()=>{
+  if(!rt){$("rst").textContent="¿Seguro? Toca otra vez";rt=setTimeout(()=>{rt=0;$("rst").textContent="Borrar estadísticas"},3000);return}
+  clearTimeout(rt);rt=0;$("rst").textContent="Borrar estadísticas";
+  ST={spins:0,wins:0,best:0,maxBal:Math.max(START,bal),streak:0,bestStreak:0};saveST();
+};
+
+// ---------- App instalable (PWA) ----------
+// El service worker solo funciona desde https (p. ej. GitHub Pages). Abierto como archivo local, el juego funciona igual.
+if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+  addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+let deferred=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;$("install").hidden=false});
+addEventListener("appinstalled",()=>{deferred=null;$("install").hidden=true});
+$("install").onclick=async()=>{if(!deferred)return;deferred.prompt();try{await deferred.userChoice}catch(e){}deferred=null;$("install").hidden=true};
+
+shown=bal;$("bal").textContent=bal;draw();show();renderStats();
+</script>
+</body>
+</html>
